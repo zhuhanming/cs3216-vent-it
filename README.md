@@ -9,8 +9,6 @@ Vent It’s goal is very simple: to be an avenue for one to let their stress out
 
 > Unfortunately, the app has been taken down due to the team's limited finances. We hope everyone had fun using it!
 
-[Old URL](https://ventit.xyz)
-
 ## Team 
 1) [Zhu Hanming](https://github.com/zhuhanming)
    - Built and styled frontend of Vent It.
