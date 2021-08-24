@@ -1,7 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import toh from '../../../apis/toh';
-import { Event } from '../../Tracking/index';
+import React from "react";
+import { connect } from "react-redux";
+import toh from "../../../apis/toh";
+import { Event } from "../../Tracking/index";
 
 class SinglePain extends React.Component {
   state = {
@@ -16,30 +16,30 @@ class SinglePain extends React.Component {
     loading: false,
     offlineAndUncached: false,
     rageMeter: [
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568526/flame_1_y64ptx.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/flame_2_reymoh.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/flame_3_gboumg.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/flame_4_hd8ra6.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/flame_5_anyvwh.svg'
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568526/flame_1_y64ptx.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/flame_2_reymoh.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/flame_3_gboumg.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/flame_4_hd8ra6.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/flame_5_anyvwh.svg",
     ],
     archiveRageMeter: [
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_1_g2xwdm.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_2_peeey2.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/bwflame_3_emqh6h.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_4_ssrosa.svg',
-      'https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_5_jdxlhv.svg'
-    ]
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_1_g2xwdm.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_2_peeey2.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568525/bwflame_3_emqh6h.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_4_ssrosa.svg",
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568523/bwflame_5_jdxlhv.svg",
+    ],
   };
 
   componentDidMount = async () => {
     this.setState({ loading: true });
-    const condition = navigator.onLine ? 'online' : 'offline';
-    if (condition === 'online') {
+    const condition = navigator.onLine ? "online" : "offline";
+    if (condition === "online") {
       try {
-        const response = await toh.get('/p/' + this.state.id, {
+        const response = await toh.get("/p/" + this.state.id, {
           headers: {
-            Authorization: 'Bearer ' + this.props.currentUser //the token is a variable which holds the token
-          }
+            Authorization: "Bearer " + this.props.currentUser, //the token is a variable which holds the token
+          },
         });
         if (response.data.success) {
           await this.setState({
@@ -48,7 +48,7 @@ class SinglePain extends React.Component {
             created_at: response.data.data[0].created_at,
             time_remaining: response.data.data[0].time_remaining,
             sound: response.data.data[0].audio_url,
-            loading: false
+            loading: false,
           });
         }
       } catch (e) {
@@ -57,10 +57,10 @@ class SinglePain extends React.Component {
           this.props.signOut();
         }
       }
-    } else if (condition === 'offline') {
-      const localPain = JSON.parse(localStorage.getItem('pain_list'));
+    } else if (condition === "offline") {
+      const localPain = JSON.parse(localStorage.getItem("pain_list"));
       if (localPain !== null) {
-        const response = localPain.filter(data => data.id === this.state.id);
+        const response = localPain.filter((data) => data.id === this.state.id);
         console.log(response);
         if (response !== null) {
           await this.setState({
@@ -69,7 +69,7 @@ class SinglePain extends React.Component {
             created_at: response[0].created_at,
             time_remaining: response[0].time_remaining,
             sound: response[0].audio_url,
-            loading: false
+            loading: false,
           });
         } else {
           this.setState({ offlineAndUncached: true, loading: false });
@@ -80,17 +80,17 @@ class SinglePain extends React.Component {
     }
   };
 
-  playSound = sound => {
+  playSound = (sound) => {
     // write function here.
-    alert('playing sound');
+    alert("playing sound");
   };
 
   deletePoint = async () => {
     try {
-      const response = await toh.delete('/p/' + this.state.id, {
+      const response = await toh.delete("/p/" + this.state.id, {
         headers: {
-          Authorization: 'Bearer ' + this.props.currentUser //the token is a variable which holds the token
-        }
+          Authorization: "Bearer " + this.props.currentUser, //the token is a variable which holds the token
+        },
       });
       if (response.data.success === true) {
         await this.setState({ deleted: true });
@@ -101,10 +101,10 @@ class SinglePain extends React.Component {
       if (e.response.status === 401) {
         this.props.signOut();
       }
-    };
+    }
   };
 
-  rageMeter = rage => {
+  rageMeter = (rage) => {
     let rageImg;
     let index;
     if (rage <= 60) {
@@ -134,18 +134,18 @@ class SinglePain extends React.Component {
   renderComponent = () => {
     let created_at = new Date(this.state.created_at);
     let month = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
 
     let formattedDay = created_at.getDate();
@@ -183,7 +183,7 @@ class SinglePain extends React.Component {
               className="text-muted mt-5"
               onClick={() => {
                 if (
-                  window.confirm('Are you sure you wish to delete this item?')
+                  window.confirm("Are you sure you wish to delete this item?")
                 )
                   this.deletePoint();
               }}
@@ -215,11 +215,11 @@ class SinglePain extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currentUser: state.auth.currentUser,
     isSignedIn: state.auth.isSignedIn,
-    verified: state.auth.verified
+    verified: state.auth.verified,
   };
 };
 

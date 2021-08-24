@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 class LongText extends React.Component {
-  state = { showAll: false }
+  state = { showAll: false };
   // showMore = () => this.setState({ showAll: true });
   // showLess = () => this.setState({ showAll: false });
   render() {
@@ -9,7 +9,11 @@ class LongText extends React.Component {
     // const { showAll } = this.state;
     if (content.length <= limit) {
       // there is nothing more to show
-      return <div><p className="dont-break-out mb-0 pain-content">{content}</p></div>
+      return (
+        <div>
+          <p className="dont-break-out mb-0 pain-content">{content}</p>
+        </div>
+      );
     }
     // if (showAll) {
     //   // We show the extended text and a link to reduce it
@@ -21,12 +25,12 @@ class LongText extends React.Component {
     // }
     // // In the final case, we show a text with ellipsis and a `Read more` button
     const toShow = content.substring(0, limit) + "...";
-    return <div>
-      <p className="dont-break-out mb-0 pain-content">
-      {toShow}
-      </p>
-      {/* <span className="text-muted" onClick={this.showMore}>Read more</span> */}
-    </div>
+    return (
+      <div>
+        <p className="dont-break-out mb-0 pain-content">{toShow}</p>
+        {/* <span className="text-muted" onClick={this.showMore}>Read more</span> */}
+      </div>
+    );
   }
 }
 

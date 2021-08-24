@@ -1,16 +1,16 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import toh from '../../apis/toh';
-import '../Main.css';
-import TextEntry from './TextEntry';
-import history from '../../history';
-import SoundEntry from './SoundEntry';
-import Confirmation from './Confirmation';
+import React from "react";
+import { connect } from "react-redux";
+import toh from "../../apis/toh";
+import "../Main.css";
+import TextEntry from "./TextEntry";
+import history from "../../history";
+import SoundEntry from "./SoundEntry";
+import Confirmation from "./Confirmation";
 
 class PointCreator extends React.Component {
   state = {
     stage: 0,
-    content: '',
+    content: "",
     audioURL: null,
     audioBlob: null,
     decibels: null,
@@ -25,20 +25,20 @@ class PointCreator extends React.Component {
 
   componentDidMount = () => {
     if (!this.props.isSignedIn || !this.props.currentUser) {
-      history.push('/');
-    } else if (this.props.verified === 'false') {
-      history.push('/verify');
+      history.push("/");
+    } else if (this.props.verified === "false") {
+      history.push("/verify");
     }
     document.body.style.backgroundColor = "#f2f2f2";
   };
 
-  enterText = event => {
+  enterText = (event) => {
     const charCount = event.target.value.length;
     const maxChar = this.state.max_char;
     const charLength = maxChar - charCount;
     this.setState({
       content: event.target.value,
-      chars_left: charLength
+      chars_left: charLength,
     });
   };
 
@@ -46,31 +46,31 @@ class PointCreator extends React.Component {
     this.setState({ audioURL: url, audioBlob: blob });
   };
 
-  recordDecibels = db => {
+  recordDecibels = (db) => {
     this.setState({ decibels: db });
   };
 
   onSubmit = async () => {
     this.setState({ submit: true });
     const data = new FormData();
-    const file = new File([this.state.audioBlob], 'filename.webm');
-    data.append('audio', file);
-    data.append('content', this.state.content);
-    data.append('angry_score', this.state.decibels);
+    const file = new File([this.state.audioBlob], "filename.webm");
+    data.append("audio", file);
+    data.append("content", this.state.content);
+    data.append("angry_score", this.state.decibels);
     try {
       await toh
-        .post('/p/upload', data, {
+        .post("/p/upload", data, {
           headers: {
-            'Content-Type':
-              'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
-            Authorization: 'Bearer ' + this.props.currentUser //the token is a variable which holds the token
+            "Content-Type":
+              "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+            Authorization: "Bearer " + this.props.currentUser, //the token is a variable which holds the token
           },
-          timeout: 30000
+          timeout: 30000,
         })
-        .then(data => {
+        .then((data) => {
           console.log(data);
         });
-      history.push('/home');
+      history.push("/home");
     } catch (e) {
       console.log(e.response);
       if (e.response.status === 401) {
@@ -81,7 +81,7 @@ class PointCreator extends React.Component {
 
   toggleBackward = () => {
     if (this.state.stage === 0) {
-      history.push('/home');
+      history.push("/home");
     } else if (this.state.stage === 1) {
       this.setState({ stage: 0 });
     } else {
@@ -113,10 +113,10 @@ class PointCreator extends React.Component {
               characterCount={this.state.chars_left}
             />
             {this.state.warning ? (
-              <p style={{ color: 'red' }}>You need to enter something!</p>
+              <p style={{ color: "red" }}>You need to enter something!</p>
             ) : (
-                <></>
-              )}
+              <></>
+            )}
           </>
         );
       } else if (this.state.stage === 1) {
@@ -139,7 +139,12 @@ class PointCreator extends React.Component {
         );
       }
     } else if (this.state.offline) {
-      return <div>You're currently offline, but your vent will be added once you reconnect.</div>
+      return (
+        <div>
+          You're currently offline, but your vent will be added once you
+          reconnect.
+        </div>
+      );
     } else {
       return <div>Loading...</div>;
     }
@@ -162,7 +167,7 @@ class PointCreator extends React.Component {
               />
               <i
                 className="fas fa-cog btn-icon-vent"
-                style={{ visibility: 'hidden' }}
+                style={{ visibility: "hidden" }}
               ></i>
             </div>
           </div>
@@ -174,11 +179,11 @@ class PointCreator extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currentUser: state.auth.currentUser,
     isSignedIn: state.auth.isSignedIn,
-    verified: state.auth.verified
+    verified: state.auth.verified,
   };
 };
 

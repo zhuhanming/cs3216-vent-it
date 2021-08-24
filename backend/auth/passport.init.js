@@ -1,25 +1,23 @@
-require('dotenv').config();
-const passport = require('passport');
-const FacebookStrategy = require('passport-facebook').Strategy;
-const JWTstrategy = require('passport-jwt').Strategy;
-const ExtractJWT = require('passport-jwt').ExtractJwt;
-const LocalStrategy = require('passport-local').Strategy;
-const FacebookTokenStrategy = require('passport-facebook-token');
+require("dotenv").config();
+const passport = require("passport");
+const FacebookStrategy = require("passport-facebook").Strategy;
+const JWTstrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
+const LocalStrategy = require("passport-local").Strategy;
+const FacebookTokenStrategy = require("passport-facebook-token");
 
-const { generateHashPassword, isSamePassword } = require('../db/helper');
+const { generateHashPassword, isSamePassword } = require("../db/helper");
 
-const client = require('../db/connection');
+const client = require("../db/connection");
 
 const getFbCallbackUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     return process.env.FACEBOOK_CALLBACK_PROD;
   } else {
     return process.env.FACEBOOK_CALLBACK;
   }
 };
 module.exports = () => {
- 
-
   const JwtCallback = (decoded_token, cb) => {
     try {
       //Pass the user details to the next middleware
@@ -31,17 +29,17 @@ module.exports = () => {
 
   const loginCallback = (email, password, cb) => {
     client.query(
-      'SELECT * FROM user_profile WHERE email = $1 ',
+      "SELECT * FROM user_profile WHERE email = $1 ",
       [email],
       (err, user) => {
         if (err) {
-          console.log('error');
+          console.log("error");
         }
         //user already exists.
         if (user.rowCount == 1) {
           //check if password is correct.
           client.query(
-            'SELECT * FROM user_account WHERE email = $1',
+            "SELECT * FROM user_account WHERE email = $1",
             [email],
             (err, userAccount) => {
               if (isSamePassword(password, userAccount.rows[0].password)) {
@@ -64,11 +62,11 @@ module.exports = () => {
       let email = profile.emails[0].value;
 
       client.query(
-        'SELECT * FROM user_profile WHERE email = $1 ',
+        "SELECT * FROM user_profile WHERE email = $1 ",
         [email],
         (err, res) => {
           if (err) {
-            console.log('error');
+            console.log("error");
           }
 
           if (res.rowCount == 1) {
@@ -77,14 +75,14 @@ module.exports = () => {
           }
 
           if (res.rowCount == 0) {
-            console.log('User doesnt exists');
+            console.log("User doesnt exists");
             // user does not exists.
             let full_name = profile.displayName;
             let profile_picture_url = profile.photos[0].value;
-            let username = email.split('@')[0];
+            let username = email.split("@")[0];
             let verified = true;
             client.query(
-              'INSERT INTO user_profile(full_name, email, profile_picture_url, username, verified ) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+              "INSERT INTO user_profile(full_name, email, profile_picture_url, username, verified ) VALUES ($1, $2, $3, $4, $5) RETURNING *",
               [full_name, email, profile_picture_url, username, verified],
               (err, insertResult) => {
                 if (err) {
@@ -92,10 +90,10 @@ module.exports = () => {
                 }
 
                 client.query(
-                  'INSERT INTO facebook_account(user_profile_id, access_token) VALUES ($1,$2)',
+                  "INSERT INTO facebook_account(user_profile_id, access_token) VALUES ($1,$2)",
                   [insertResult.rows[0].id, accessToken],
                   (err, insertResultFB) => {
-                    console.log('☑️Insert into FB_account done');
+                    console.log("☑️Insert into FB_account done");
                     cb(null, profile, insertResult.rows[0]); // can return the custom data.
                     //client.end();
                   }
@@ -108,14 +106,13 @@ module.exports = () => {
     } catch (error) {
       cb(error, false);
     }
-    
-  }
+  };
 
   passport.use(
     new FacebookTokenStrategy(
       {
         clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
       },
       facebookTokenCallback
     )
@@ -127,11 +124,11 @@ module.exports = () => {
         //secret we used to sign our JWT
         secretOrKey: process.env.JWT_SECRET,
         //we expect the user to send the token as a query paramater with the name 'secret_token'
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
       },
       JwtCallback
     )
   );
 
-  passport.use(new LocalStrategy({ usernameField: 'email' }, loginCallback));
+  passport.use(new LocalStrategy({ usernameField: "email" }, loginCallback));
 };

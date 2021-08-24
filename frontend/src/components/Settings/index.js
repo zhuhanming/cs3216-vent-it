@@ -1,17 +1,18 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { signOut } from '../../actions';
-import history from '../../history';
+import React from "react";
+import { connect } from "react-redux";
+import { signOut } from "../../actions";
+import history from "../../history";
 
 class Settings extends React.Component {
   componentDidMount = () => {
     if (!this.props.isSignedIn || !this.props.currentUser) {
-      history.push('/');
-    } else if (this.props.verified === 'false') {
-      history.push('/verify');
+      history.push("/");
+    } else if (this.props.verified === "false") {
+      history.push("/verify");
     }
-    document.body.style.backgroundColor = '#f2f2f2';
-    new Image().src = "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568526/mascot_4_df4fth.svg".fileName;
+    document.body.style.backgroundColor = "#f2f2f2";
+    new Image().src =
+      "https://res.cloudinary.com/dwbg1zcql/image/upload/v1569568526/mascot_4_df4fth.svg".fileName;
   };
 
   signOut = () => {
@@ -25,7 +26,7 @@ class Settings extends React.Component {
           <div className="d-flex flex-column visible">
             <div className="d-flex justify-content-between align-items-center mt-3">
               <i
-                onClick={() => history.push('/home')}
+                onClick={() => history.push("/home")}
                 className="fas fa-chevron-left btn-icon-vent"
               ></i>
               <img
@@ -35,7 +36,7 @@ class Settings extends React.Component {
               />
               <i
                 className="fas fa-cog btn-icon-vent"
-                style={{ visibility: 'hidden' }}
+                style={{ visibility: "hidden" }}
               ></i>
             </div>
           </div>
@@ -58,15 +59,12 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currentUser: state.auth.currentUser,
     isSignedIn: state.auth.isSignedIn,
-    verified: state.auth.verified
+    verified: state.auth.verified,
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { signOut }
-)(Settings);
+export default connect(mapStateToProps, { signOut })(Settings);

@@ -1,10 +1,10 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-require('dotenv').config();
+require("dotenv").config();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.json({ status: 'Ready' });
+router.get("/", function (req, res, next) {
+  res.json({ status: "Ready" });
 });
 
 module.exports = router;

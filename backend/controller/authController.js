@@ -1,10 +1,10 @@
-require('dotenv').config();
-const { generateHashPassword } = require('../db/helper');
+require("dotenv").config();
+const { generateHashPassword } = require("../db/helper");
 const jwtSecret = process.env.JWT_SECRET;
-const jsonWebToken = require('jsonwebtoken');
+const jsonWebToken = require("jsonwebtoken");
 
-const { sendVerificationEmail } = require('./helper');
-const client = require('../db/connection');
+const { sendVerificationEmail } = require("./helper");
+const client = require("../db/connection");
 const JWT_EXPIRES_IN = 604800;
 
 const signupUser = (request, response) => {
@@ -17,12 +17,12 @@ const signupUser = (request, response) => {
       success: false,
       error: {
         message:
-          'Field(s) are empty. Please fill in all fields before submission.'
-      }
+          "Field(s) are empty. Please fill in all fields before submission.",
+      },
     });
   }
   client.query(
-    'SELECT * FROM user_profile WHERE email = $1 ',
+    "SELECT * FROM user_profile WHERE email = $1 ",
     [email],
     (error, results) => {
       if (error) {
@@ -33,28 +33,28 @@ const signupUser = (request, response) => {
         return response.json({
           success: false,
           error: {
-            message: 'User already exists.'
-          }
+            message: "User already exists.",
+          },
         });
       }
       client.query(
-        'INSERT INTO user_profile(full_name, email, username ) VALUES ($1, $2, $3) RETURNING *',
+        "INSERT INTO user_profile(full_name, email, username ) VALUES ($1, $2, $3) RETURNING *",
         [full_name, email, username],
         (error, insertResult) => {
           // console.log(insertResult);
           let user_profile_id = insertResult.rows[0].id;
           client.query(
-            'INSERT INTO user_account(user_profile_id, email, password) VALUES ($1,$2, $3)',
+            "INSERT INTO user_account(user_profile_id, email, password) VALUES ($1,$2, $3)",
             [user_profile_id, email, generateHashPassword(password)],
             (err, insertResultAccount) => {
-              console.log('☑️Insert into user_account done');
+              console.log("☑️Insert into user_account done");
               //client.end();
               let accessToken = jsonWebToken.sign(
                 insertResult.rows[0],
                 jwtSecret,
                 {
                   //Set the expiration
-                  expiresIn: JWT_EXPIRES_IN //we are setting the expiration time of 1 day.
+                  expiresIn: JWT_EXPIRES_IN, //we are setting the expiration time of 1 day.
                 }
               );
               sendVerificationEmail(email, accessToken);
@@ -62,7 +62,7 @@ const signupUser = (request, response) => {
               response.json({
                 success: true,
                 user: insertResult.rows[0],
-                accessToken: accessToken
+                accessToken: accessToken,
               });
             }
           );
@@ -73,18 +73,18 @@ const signupUser = (request, response) => {
 };
 
 const loginUser = (request, response) => {
-  console.log('🧐 Login', request.user);
+  console.log("🧐 Login", request.user);
   if (request.user) {
-    console.log('✅ Success login via Email.');
+    console.log("✅ Success login via Email.");
     let accessToken = jsonWebToken.sign(request.user, jwtSecret, {
       //Set the expiration
-      expiresIn: JWT_EXPIRES_IN //we are setting the expiration time of 7 day.
+      expiresIn: JWT_EXPIRES_IN, //we are setting the expiration time of 7 day.
     });
 
     response.json({
       success: true,
       user: request.user,
-      accessToken: accessToken
+      accessToken: accessToken,
     });
   }
 };
@@ -92,10 +92,10 @@ const loginUser = (request, response) => {
 const loginUserError = (err, request, response, next) => {
   // failure
   if (err) {
-    console.log('❌Error login via email.');
+    console.log("❌Error login via email.");
     response.status(401).json({
       success: false,
-      error: err
+      error: err,
     });
   }
 };
@@ -103,18 +103,18 @@ const loginUserError = (err, request, response, next) => {
 const fbLogin = (request, response, next) => {
   // success
   if (request.user) {
-    console.log('✅ Success login via Facebook.');
+    console.log("✅ Success login via Facebook.");
     // generate JWT
     // return user info and jwt.
     let accessToken = jsonWebToken.sign(request.authInfo, jwtSecret, {
       //Set the expiration
-      expiresIn: JWT_EXPIRES_IN //we are setting the expiration time of 1 day.
+      expiresIn: JWT_EXPIRES_IN, //we are setting the expiration time of 1 day.
     });
 
     response.json({
       success: true,
       user: request.authInfo,
-      accessToken: accessToken
+      accessToken: accessToken,
     });
   }
 };
@@ -122,10 +122,10 @@ const fbLogin = (request, response, next) => {
 const fbLoginError = (err, request, response, next) => {
   // failure
   if (err) {
-    console.log('❌Error login via Facebook.');
+    console.log("❌Error login via Facebook.");
     response.status(401).json({
       success: false,
-      error: err
+      error: err,
     });
   }
 };
@@ -137,18 +137,18 @@ const confirmEmail = (request, response) => {
     return response.json({
       success: false,
       error: {
-        message: 'User already verified.'
-      }
+        message: "User already verified.",
+      },
     });
   } else {
     client.query(
-      'SELECT * FROM user_profile WHERE email = $1',
+      "SELECT * FROM user_profile WHERE email = $1",
       [email],
       (error, result) => {
         if (result.rowCount == 1) {
           //user already exist.
           client.query(
-            'UPDATE user_profile SET verified = true WHERE email = $1 RETURNING *',
+            "UPDATE user_profile SET verified = true WHERE email = $1 RETURNING *",
             [email],
             (err, updateResult) => {
               if (updateResult.rowCount == 1) {
@@ -157,14 +157,14 @@ const confirmEmail = (request, response) => {
                   jwtSecret,
                   {
                     //Set the expiration
-                    expiresIn: JWT_EXPIRES_IN //we are setting the expiration time of 1 day.
+                    expiresIn: JWT_EXPIRES_IN, //we are setting the expiration time of 1 day.
                   }
                 );
 
                 response.json({
                   success: true,
                   user: updateResult.rows[0],
-                  accessToken: accessToken
+                  accessToken: accessToken,
                 });
               }
             }
@@ -181,31 +181,27 @@ const resendEmail = (request, response) => {
   let email = user.email;
 
   client.query(
-    'SELECT * FROM user_profile WHERE email = $1',
+    "SELECT * FROM user_profile WHERE email = $1",
     [email],
     (error, result) => {
       if (result.rowCount == 0) {
         return response.json({
           success: false,
           error: {
-            message: 'User does not exits.'
-          }
-        })
+            message: "User does not exits.",
+          },
+        });
       }
 
       if (result.rowCount == 1) {
-        let accessToken = jsonWebToken.sign(
-          result.rows[0],
-          jwtSecret,
-          {
-            //Set the expiration
-            expiresIn: JWT_EXPIRES_IN //we are setting the expiration time of 1 day.
-          }
-        );
+        let accessToken = jsonWebToken.sign(result.rows[0], jwtSecret, {
+          //Set the expiration
+          expiresIn: JWT_EXPIRES_IN, //we are setting the expiration time of 1 day.
+        });
         sendVerificationEmail(email, accessToken);
         return response.json({
-          success: true
-        })
+          success: true,
+        });
       }
     }
   );
@@ -218,5 +214,5 @@ module.exports = {
   fbLogin,
   fbLoginError,
   confirmEmail,
-  resendEmail
+  resendEmail,
 };

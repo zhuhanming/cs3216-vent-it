@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import '../../Main.css';
-import { ReactMic } from 'react-mic';
-import Button from '../../Home/Button';
-import Countdown from 'react-countdown-now';
+import React from "react";
+import { connect } from "react-redux";
+import "../../Main.css";
+import { ReactMic } from "react-mic";
+import Button from "../../Home/Button";
+import Countdown from "react-countdown-now";
 
 class SoundEntry extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class SoundEntry extends React.Component {
     this.state = {
       record: false,
       countdownApi: null,
-      countdownTimer: Date.now() + 5000
+      countdownTimer: Date.now() + 5000,
     };
   }
 
@@ -19,33 +19,33 @@ class SoundEntry extends React.Component {
     if (!this.state.record) {
       this.setState(
         {
-          record: true
+          record: true,
         },
         () => this.state.countdownApi && this.state.countdownApi.start()
       );
     }
 
-    console.log('Start recording clicked');
+    console.log("Start recording clicked");
     //setTimeout(() => this.stopRecording(), 5000); //TODO: dont delete this first.
   };
 
   stopRecording = () => {
     this.setState({
-      record: false
+      record: false,
     });
-    console.log('stop recording clicked');
+    console.log("stop recording clicked");
   };
 
-  onStop = recordedBlob => {
-    console.log('recordedBlob is: ', recordedBlob);
+  onStop = (recordedBlob) => {
+    console.log("recordedBlob is: ", recordedBlob);
     getDecibels(recordedBlob.blob, this.recordDecibels);
     this.props.recordSound(recordedBlob, recordedBlob.blobURL);
     this.props.toggleForward();
   };
 
-  recordDecibels = db => {
+  recordDecibels = (db) => {
     this.props.recordDecibels(db);
-    console.log('Max Decibels: ', db);
+    console.log("Max Decibels: ", db);
   };
 
   renderer = ({ hours, minutes, seconds, completed }) => {
@@ -60,10 +60,10 @@ class SoundEntry extends React.Component {
     }
   };
 
-  setRef = countdown => {
+  setRef = (countdown) => {
     if (countdown) {
       this.setState({
-        countdownApi: countdown.getApi()
+        countdownApi: countdown.getApi(),
       });
     }
   };
@@ -88,7 +88,7 @@ class SoundEntry extends React.Component {
               renderer={this.renderer}
               onComplete={() => this.stopRecording()}
             />
-            
+
             <ReactMic
               record={this.state.record}
               className="sound-wave"
@@ -121,19 +121,19 @@ function getDecibels(recordedBlob, callbackFn) {
     var maxAmpl = 0;
     for (var i = 0; i < decodedData.numberOfChannels; i++) {
       typedArray = decodedData.getChannelData(i);
-      typedArray.forEach(sample => {
+      typedArray.forEach((sample) => {
         maxAmpl = Math.max(maxAmpl, Math.abs(sample));
       });
     }
-    callbackFn(90*maxAmpl + 30);
+    callbackFn(90 * maxAmpl + 30);
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currentUser: state.auth.currentUser,
     isSignedIn: state.auth.isSignedIn,
-    verified: state.auth.verified
+    verified: state.auth.verified,
   };
 };
 
